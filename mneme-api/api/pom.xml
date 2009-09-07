@@ -46,28 +46,16 @@
 	</properties>
 
 	<dependencies>
-
 		<dependency>
-			<groupId>org.sakaiproject</groupId>
-			<artifactId>sakai-entity-api</artifactId>
-			<version>${sakai.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.sakaiproject</groupId>
-			<artifactId>sakai-user-api</artifactId>
-			<version>${sakai.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.sakaiproject</groupId>
-			<artifactId>sakai-util-api</artifactId>
-			<version>${sakai.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
+            <groupId>org.sakaiproject.kernel</groupId>
+            <artifactId>sakai-kernel-api</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>org.etudes.util</groupId>
+        	<artifactId>etudes-util-api</artifactId>
+        	<version>1.0</version>
+        	<scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.etudes.ambrosia</groupId>
 			<artifactId>etudes-ambrosia-api</artifactId>
