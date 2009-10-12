@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean id="mnemeMain" class="org.sakaiproject.component.app.help.model.ResourceBean">
+        <property name="docId">
+            <value>mneme</value>
+        </property>
+        <property name="name">
+            <value>Tasks, Tests &amp; Surveys Overview</value>
+        </property>
+        <property name="location">
+            <value>/sakai_mneme/mneme.html</value>
+        </property>
+        <property name="defaultForTool"><value>sakai.mneme</value></property>
+    </bean>
+
+   <bean id="org.sakaiproject.api.app.help.TableOfContents" class="org.sakaiproject.component.app.help.model.TableOfContentsBean">
+        <property name="name">
+            <value>root</value>
+        </property>
+        <property name="categories">
+            <list>
+                <bean id="mnemeCategory" class="org.sakaiproject.component.app.help.model.CategoryBean">
+                    <property name="name">
+                        <value>Tasks, Tests &amp; Surveys</value>
+                    </property>
+                    <property name="resources">
+                        <list>
+                            <ref bean="mnemeMain"/>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+</beans>
