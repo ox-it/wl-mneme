@@ -1344,7 +1344,7 @@ public class ImportQtiServiceImpl implements ImportQtiService
 			float points = 0.0f;
 			float maxPoints = 0.0f;
 			String externalId = null;
-			boolean shuffle = true;
+			boolean shuffle = false;
 			boolean singleAnswer = true;
 			
 			externalId = StringUtil.trimToNull(item.getAttribute("ident"));
@@ -1392,6 +1392,11 @@ public class ImportQtiServiceImpl implements ImportQtiService
 			
 			if ("Multiple".equalsIgnoreCase(rcardinality))
 				singleAnswer = false;
+			
+			XPath shufflePath = new DOMXPath(".//render_choice/@shuffle");
+			String shuffleValue = StringUtil.trimToNull(shufflePath.stringValueOf(item));
+			if (shuffleValue == null)
+				shuffle = "yes".equalsIgnoreCase(shuffleValue);
 			
 			// answers - w/ id
 			Map<String, String> answerMap = new LinkedHashMap<String, String>();
