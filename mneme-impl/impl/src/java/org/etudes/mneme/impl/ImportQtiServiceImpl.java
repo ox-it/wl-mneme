@@ -151,6 +151,7 @@ public class ImportQtiServiceImpl implements ImportQtiService
 
 		// get a name for the pool, with the date
 		String poolId = "pool";
+		String description = "";
 		try
 		{
 			XPath assessmentTitlePath = new DOMXPath("/questestinterop/assessment/@title");
@@ -166,6 +167,10 @@ public class ImportQtiServiceImpl implements ImportQtiService
 			{
 				poolId = title;
 			}
+			
+			XPath descriptionPath = new DOMXPath("/questestinterop/assessment/presentation_material//mattext");
+			description = StringUtil.trimToNull(descriptionPath.stringValueOf(doc));
+			
 		}
 		catch (JaxenException e)
 		{
@@ -178,7 +183,7 @@ public class ImportQtiServiceImpl implements ImportQtiService
 		// create the pool
 		Pool pool = this.poolService.newPool(context);
 		pool.setTitle(poolId);
-		// pool.setDescription(info.description);
+		pool.setDescription(description);
 
 		// average the question points for the pool's point value
 		Average pointsAverage = new Average();
