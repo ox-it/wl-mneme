@@ -528,7 +528,7 @@ public class ImportQtiServiceImpl implements ImportQtiService
 			boolean survey = false;
 			float points = 0.0f;
 			String externalId = null;
-			boolean shuffle = true;
+			boolean shuffle = false;
 			boolean singleAnswer = true;
 
 			externalId = StringUtil.trimToNull(item.getAttribute("ident"));
@@ -551,8 +551,8 @@ public class ImportQtiServiceImpl implements ImportQtiService
 
 			XPath shufflePath = new DOMXPath("presentation//response_lid//render_choice/@shuffle");
 			String shuffleValue = StringUtil.trimToNull(shufflePath.stringValueOf(item));
-			if (shuffleValue == null) return false;
-			shuffle = "yes".equalsIgnoreCase(shuffleValue);
+			if (shuffleValue != null)
+				shuffle = "yes".equalsIgnoreCase(shuffleValue);
 
 			// XPath singleAnswerPath = new DOMXPath("presentation//response_lid/@rcardinality");
 			// String singleAnswerValue = StringUtil.trimToNull(singleAnswerPath.stringValueOf(item));
@@ -1374,7 +1374,7 @@ public class ImportQtiServiceImpl implements ImportQtiService
 
 			XPath shufflePath = new DOMXPath(".//render_choice/@shuffle");
 			String shuffleValue = StringUtil.trimToNull(shufflePath.stringValueOf(item));
-			if (shuffleValue == null)
+			if (shuffleValue != null)
 				shuffle = "yes".equalsIgnoreCase(shuffleValue);
 			
 			// answers - w/ id
