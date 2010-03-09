@@ -2227,45 +2227,13 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 	{
 		// collect the submissions to this assessment
 		List<SubmissionImpl> rv = this.storage.getAssessmentSubmissions(assessment);
-
-		// get all possible users who can submit
-		Set<String> userIds = this.securityService.getUsersIsAllowed(MnemeService.SUBMIT_PERMISSION, assessment.getContext());
-
-		// filter out any userIds that are not currently defined
-		List<User> users = this.userDirectoryService.getUsers(userIds);
-		userIds.clear();
-		for (User user : users)
+		for (Iterator<SubmissionImpl> i = rv.iterator(); i.hasNext();)
 		{
-			userIds.add(user.getId());
-		}
-
-		// if any user is not represented in the submissions we found, add an empty submission
-		for (String userId : userIds)
-		{
-			boolean found = false;
-			for (Submission s : rv)
-			{
-				if (s.getUserId().equals(userId))
-				{
-					found = true;
-					break;
-				}
-			}
-
-			if (!found)
-			{
-				SubmissionImpl s = this.getPhantomSubmission(userId, assessment);
-				rv.add(s);
-			}
-		}
-
-		// filter out any submissions found that are not for one of the users in the userIds list (they may have lost permission)
-		for (Iterator i = rv.iterator(); i.hasNext();)
-		{
-			SubmissionImpl submission = (SubmissionImpl) i.next();
-
-			if (!userIds.contains(submission.getUserId()))
-			{
+			// Disregard submissions from any users who no longer can submit:
+			// TODO: Optimise / re-think if this is a performance hit for lots of users!!
+			Submission s = i.next();
+			if (!securityService.checkSecurity(s.getUserId(), MnemeService.SUBMIT_PERMISSION, 
+					s.getAssessment().getContext())) {
 				i.remove();
 			}
 		}
