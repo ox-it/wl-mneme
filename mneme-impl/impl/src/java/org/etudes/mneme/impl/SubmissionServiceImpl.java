@@ -2227,9 +2227,41 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 	{
 		// collect the submissions to this assessment
 		List<SubmissionImpl> rv = this.storage.getAssessmentSubmissions(assessment);
+
+		// get all possible users who can submit
+		Set<String> userIds = this.securityService.getUsersIsAllowed(MnemeService.SUBMIT_PERMISSION, assessment.getContext());
+
+		// filter out any userIds that are not currently defined
+		List<User> users = this.userDirectoryService.getUsers(userIds);
+		userIds.clear();
+		for (User user : users)
+		{
+			userIds.add(user.getId());
+		}
+
+		// if any user is not represented in the submissions we found, add an empty submission
+		for (String userId : userIds)
+		{
+			boolean found = false;
+			for (Submission s : rv)
+			{
+				if (s.getUserId().equals(userId))
+				{
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+			{
+				SubmissionImpl s = this.getPhantomSubmission(userId, assessment);
+				rv.add(s);
+			}
+		}
+
+		// Disregard submissions from any users who no longer can submit.		
 		for (Iterator<SubmissionImpl> i = rv.iterator(); i.hasNext();)
 		{
-			// Disregard submissions from any users who no longer can submit:
 			// TODO: Optimise / re-think if this is a performance hit for lots of users!!
 			Submission s = i.next();
 			if (!securityService.checkSecurity(s.getUserId(), MnemeService.SUBMIT_PERMISSION, 
