@@ -1678,8 +1678,12 @@ public class ImportQtiServiceImpl implements ImportQtiService
 			question.getTypeSpecificQuestion().consolidate("");
 			this.questionService.saveQuestion(question);
 
+			// This import code averages all question marks, which results in strange mark allocations,
+			// so it's preferable to keep marks available per question to 5, even for single answer questions:
+			
+			pointsAverage.add(5);
 			// add to the points average
-			pointsAverage.add(points);
+//			pointsAverage.add(points);
 			
 			return true;
 		}
@@ -2547,8 +2551,12 @@ public class ImportQtiServiceImpl implements ImportQtiService
 		question.getTypeSpecificQuestion().consolidate("");
 		this.questionService.saveQuestion(question);
 
+		// This import code averages all question marks, which results in strange mark allocations,
+		// so it's preferable to keep marks available per question to 5, even for single answer questions:
+
+		pointsAverage.add(5);
 		// add to the points average
-		pointsAverage.add(points);
+//		pointsAverage.add(points);
 
 		return true;
 	}
