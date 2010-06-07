@@ -324,6 +324,9 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 			this.gradesService.reportSubmissionGrade(submission);
 		}
 
+		// (Optionally) send an e-mail, typically if the user reached the pass mark:
+		M_log.info("Possible e-mail sent for assignment: " + assessment.getTitle() + ", user: "  + submission.getUserId());
+		
 		// event track it
 		eventTrackingService.post(eventTrackingService.newEvent(MnemeService.SUBMISSION_COMPLETE, getSubmissionReference(submission.getId()), true));
 	}
