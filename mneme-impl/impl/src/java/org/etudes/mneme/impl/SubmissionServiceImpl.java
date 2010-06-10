@@ -54,6 +54,7 @@ import org.etudes.mneme.api.SubmissionCompletedException;
 import org.etudes.mneme.api.SubmissionService;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.db.api.SqlService;
+import org.sakaiproject.email.api.EmailService;
 import org.sakaiproject.event.api.EventTrackingService;
 import org.sakaiproject.thread_local.api.ThreadLocalManager;
 import org.sakaiproject.tool.api.Session;
@@ -118,6 +119,9 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 
 	/** Dependency: UserDirectoryService. */
 	protected UserDirectoryService userDirectoryService = null;
+	
+	/** Dependency: EmailService. */
+	protected EmailService emailService = null;
 
 	/**
 	 * {@inheritDoc}
@@ -325,12 +329,17 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 		}
 
 		// (Optionally) send an e-mail, typically if the user reached the pass mark:
-		M_log.info("Possible e-mail sent for assignment: " + assessment.getTitle() + ", user: "  + submission.getUserId());
-		
+		sendEmail(assessment, submission);
 		// event track it
 		eventTrackingService.post(eventTrackingService.newEvent(MnemeService.SUBMISSION_COMPLETE, getSubmissionReference(submission.getId()), true));
 	}
 
+	private void sendEmail(Assessment assessment, Submission submission) 
+	{
+		emailService.send("weblearn@oucs-alexis.oucs.ox.ac.uk", "alexis.oconnor@oucs.ox.ac.uk", 
+				"[TTS]: " + assessment.getTitle(), "\nUser with the id - " + submission.getUserId() + " - submitted!", null, null, null);
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -3334,5 +3343,13 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 		checkerThread.interrupt();
 
 		checkerThread = null;
+	}
+
+	public EmailService getEmailService() {
+		return emailService;
+	}
+
+	public void setEmailService(EmailService emailService) {
+		this.emailService = emailService;
 	}
 }
