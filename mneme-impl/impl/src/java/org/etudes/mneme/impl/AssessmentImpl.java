@@ -68,7 +68,9 @@ public class AssessmentImpl implements Assessment
 	/** Our logger. */
 	private static Log M_log = LogFactory.getLog(AssessmentImpl.class);
 	protected Boolean archived = Boolean.FALSE;
-
+	
+	protected Boolean sendEmailOnSubmission = Boolean.FALSE;
+	
 	/** Track the original archived setting. */
 	protected transient Boolean archivedWas = Boolean.FALSE;
 
@@ -115,6 +117,8 @@ public class AssessmentImpl implements Assessment
 	protected boolean needsRescore = false;
 
 	protected AssessmentPartsImpl parts = null;
+	
+	protected Float passMark = null;
 
 	protected AssessmentPassword password = null;
 
@@ -508,6 +512,13 @@ public class AssessmentImpl implements Assessment
 		if (this.getResultsEmail() != null)
 		{
 			if ((this.dates.getDueDate() == null) && (this.dates.getAcceptUntilDate() == null)) return Boolean.FALSE;
+		}
+
+		// Pass mark is a % value so...
+		Float passMark = getPassMark();
+		if (passMark != null)
+		{
+			return passMark >= 0 && passMark <= 100; 
 		}
 
 		return Boolean.TRUE;
@@ -1523,6 +1534,7 @@ public class AssessmentImpl implements Assessment
 		this.modifiedBy = new AttributionImpl((AttributionImpl) other.modifiedBy, this.changed);
 		this.needsPoints = other.needsPoints;
 		this.parts = new AssessmentPartsImpl(this, (AssessmentPartsImpl) other.parts, this.changed);
+		this.passMark = other.passMark;
 		this.password = new AssessmentPasswordImpl((AssessmentPasswordImpl) other.password, this.changed);
 		this.poolId = other.poolId;
 		this.poolService = other.poolService;
@@ -1537,6 +1549,7 @@ public class AssessmentImpl implements Assessment
 		this.resultsEmail = other.resultsEmail;
 		this.resultsSent = other.resultsSent;
 		this.review = new AssessmentReviewImpl(this, (AssessmentReviewImpl) other.review, this.changed);
+		this.sendEmailOnSubmission = other.sendEmailOnSubmission;
 		this.showHints = other.showHints;
 		this.showModelAnswer = other.showModelAnswer;
 		this.submissionContext = other.submissionContext;
@@ -1551,5 +1564,36 @@ public class AssessmentImpl implements Assessment
 		this.type = other.type;
 		this.typeWas = other.typeWas;
 		this.userDirectoryService = other.userDirectoryService;
+	}
+
+	public Boolean getSendEmailOnSubmission() {
+		return sendEmailOnSubmission;
+	}
+
+	public void setSendEmailOnSubmission(Boolean send) 
+	{
+		if (send == null) 
+			throw new IllegalArgumentException();
+		
+		if (this.sendEmailOnSubmission.equals(send))
+			return;
+
+		this.sendEmailOnSubmission = send;
+		this.changed.setChanged();
+	}
+
+	public Float getPassMark() {
+		return this.passMark;
+	}
+
+	public void setPassMark(Float passMark) {
+		if (passMark != null && passMark.floatValue() < 0)
+			throw new IllegalArgumentException();
+		
+		if (!Different.different(passMark, this.passMark)) 
+			return;
+
+		this.passMark = passMark;
+		this.changed.setChanged();
 	}
 }
