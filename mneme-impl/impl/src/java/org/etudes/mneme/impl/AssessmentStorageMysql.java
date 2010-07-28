@@ -154,10 +154,10 @@ public class AssessmentStorageMysql extends AssessmentStorageSql implements Asse
 		sql.append(" PARTS_CONTINUOUS, PARTS_SHOW_PRES, PASSWORD, PRESENTATION_TEXT,");
 		sql.append(" PUBLISHED, QUESTION_GROUPING, RANDOM_ACCESS,");
 		sql.append(" REVIEW_DATE, REVIEW_SHOW_CORRECT, REVIEW_SHOW_FEEDBACK, REVIEW_TIMING,");
-		sql.append(" SHOW_HINTS, SUBMIT_PRES_TEXT, TIME_LIMIT, TITLE, TRIES, TYPE)");
-		sql.append(" VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		sql.append(" SEND_SUBMIT_EMAIL, SHOW_HINTS, SUBMIT_PRES_TEXT, TIME_LIMIT, TITLE, TRIES, TYPE)");
+		sql.append(" VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
-		Object[] fields = new Object[35];
+		Object[] fields = new Object[36];
 		int i = 0;
 		fields[i++] = assessment.getArchived() ? "1" : "0";
 		fields[i++] = assessment.getContext();
@@ -190,6 +190,7 @@ public class AssessmentStorageMysql extends AssessmentStorageSql implements Asse
 				.getShowCorrectAnswer().equals(ReviewShowCorrect.no) ? "0" : "C");
 		fields[i++] = assessment.getReview().getShowFeedback() ? "1" : "0";
 		fields[i++] = assessment.getReview().getTiming().toString();
+		fields[i++] = assessment.getSendEmailOnSubmission() ? "1" : "0";
 		fields[i++] = assessment.getShowHints() ? "1" : "0";
 		fields[i++] = assessment.getSubmitPresentation().getText();
 		fields[i++] = assessment.getTimeLimit();

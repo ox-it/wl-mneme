@@ -240,6 +240,13 @@ public interface Assessment
 	List<Float> getScores();
 
 	/**
+	 * Check if the user should receive an e-mail when they submit.
+	 * 
+	 * @return TRUE if the user should receive an e-mail when they submit, FALSE if not.
+	 */
+	Boolean getSendEmailOnSubmission();
+	
+	/**
 	 * Access the "show-hints" setting
 	 * 
 	 * @return TRUE to show authored hints, FALSE to ignore them.
@@ -369,6 +376,13 @@ public interface Assessment
 	 */
 	void setRequireHonorPledge(Boolean honorPledge);
 
+	/**
+	 * Set whether or not the user should receive an e-mail when they submit.
+	 * 
+	 * @param send the value indicating whether or not a user should receive an e-mail when they submit.
+	 */
+	void setSendEmailOnSubmission(Boolean send);
+	
 	/**
 	 * Set the "show-hints" setting
 	 * 

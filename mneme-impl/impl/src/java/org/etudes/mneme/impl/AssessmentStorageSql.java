@@ -884,7 +884,7 @@ public abstract class AssessmentStorageSql implements AssessmentStorage
 		sql.append(" A.PARTS_CONTINUOUS, A.PARTS_SHOW_PRES, A.PASSWORD, A.PRESENTATION_TEXT,");
 		sql.append(" A.PUBLISHED, A.QUESTION_GROUPING, A.RANDOM_ACCESS,");
 		sql.append(" A.REVIEW_DATE, A.REVIEW_SHOW_CORRECT, A.REVIEW_SHOW_FEEDBACK, A.REVIEW_TIMING,");
-		sql.append(" A.SHOW_HINTS, A.SUBMIT_PRES_TEXT, A.TIME_LIMIT, A.TITLE, A.TRIES, A.TYPE");
+		sql.append(" A.SEND_SUBMIT_EMAIL, A.SHOW_HINTS, A.SUBMIT_PRES_TEXT, A.TIME_LIMIT, A.TITLE, A.TRIES, A.TYPE");
 		sql.append(" FROM MNEME_ASSESSMENT A ");
 		sql.append(where);
 		if (order != null) sql.append(order);
@@ -927,6 +927,7 @@ public abstract class AssessmentStorageSql implements AssessmentStorage
 					assessment.getReview().setShowCorrectAnswer(readReviewShowCorrect(result, i++));
 					assessment.getReview().setShowFeedback(SqlHelper.readBoolean(result, i++));
 					assessment.getReview().setTiming(ReviewTiming.valueOf(SqlHelper.readString(result, i++)));
+					assessment.setSendEmailOnSubmission(SqlHelper.readBoolean(result, i++));
 					assessment.setShowHints(SqlHelper.readBoolean(result, i++));
 					assessment.getSubmitPresentation().setText(SqlHelper.readString(result, i++));
 					assessment.setTimeLimit(SqlHelper.readLong(result, i++));
@@ -1223,10 +1224,10 @@ public abstract class AssessmentStorageSql implements AssessmentStorage
 		sql.append(" PARTS_CONTINUOUS=?, PARTS_SHOW_PRES=?, PASSWORD=?, PRESENTATION_TEXT=?,");
 		sql.append(" PUBLISHED=?, QUESTION_GROUPING=?, RANDOM_ACCESS=?,");
 		sql.append(" REVIEW_DATE=?, REVIEW_SHOW_CORRECT=?, REVIEW_SHOW_FEEDBACK=?, REVIEW_TIMING=?,");
-		sql.append(" SHOW_HINTS=?, SUBMIT_PRES_TEXT=?, TIME_LIMIT=?, TITLE=?, TRIES=?, TYPE=?");
+		sql.append(" SEND_SUBMIT_EMAIL=?, SHOW_HINTS=?, SUBMIT_PRES_TEXT=?, TIME_LIMIT=?, TITLE=?, TRIES=?, TYPE=?");
 		sql.append(" WHERE ID=?");
 
-		Object[] fields = new Object[34];
+		Object[] fields = new Object[35];
 		int i = 0;
 		fields[i++] = assessment.getArchived() ? "1" : "0";
 		fields[i++] = assessment.getContext();
@@ -1257,6 +1258,7 @@ public abstract class AssessmentStorageSql implements AssessmentStorage
 				.getShowCorrectAnswer().equals(ReviewShowCorrect.no) ? "0" : "C");
 		fields[i++] = assessment.getReview().getShowFeedback() ? "1" : "0";
 		fields[i++] = assessment.getReview().getTiming().toString();
+		fields[i++] = assessment.getSendEmailOnSubmission() ? "1" : "0";
 		fields[i++] = assessment.getShowHints() ? "1" : "0";
 		fields[i++] = assessment.getSubmitPresentation().getText();
 		fields[i++] = assessment.getTimeLimit();

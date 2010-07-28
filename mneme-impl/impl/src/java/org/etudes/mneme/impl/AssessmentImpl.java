@@ -68,6 +68,8 @@ public class AssessmentImpl implements Assessment
 	private static Log M_log = LogFactory.getLog(AssessmentImpl.class);
 
 	protected Boolean archived = Boolean.FALSE;
+	
+	protected Boolean sendEmailOnSubmission = Boolean.FALSE;
 
 	/** Track the original archived setting. */
 	protected transient Boolean archivedWas = Boolean.FALSE;
@@ -1048,5 +1050,21 @@ public class AssessmentImpl implements Assessment
 		this.tries = other.tries;
 		this.type = other.type;
 		this.userDirectoryService = other.userDirectoryService;
+	}
+
+	public Boolean getSendEmailOnSubmission() {
+		return sendEmailOnSubmission;
+	}
+
+	public void setSendEmailOnSubmission(Boolean send) {
+		if (send == null) {
+			throw new IllegalArgumentException();
+		}
+		if (this.sendEmailOnSubmission.equals(send)) {
+			return;
+		}
+
+		this.sendEmailOnSubmission = send;
+		this.changed.setChanged();
 	}
 }
