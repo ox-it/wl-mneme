@@ -927,7 +927,7 @@ public abstract class AssessmentStorageSql implements AssessmentStorage
 					assessment.getReview().setShowCorrectAnswer(readReviewShowCorrect(result, i++));
 					assessment.getReview().setShowFeedback(SqlHelper.readBoolean(result, i++));
 					assessment.getReview().setTiming(ReviewTiming.valueOf(SqlHelper.readString(result, i++)));
-					assessment.setSendEmailOnSubmission(SqlHelper.readBoolean(result, i++));
+					assessment.initSendEmailOnSubmission(SqlHelper.readBoolean(result, i++));
 					assessment.setShowHints(SqlHelper.readBoolean(result, i++));
 					assessment.getSubmitPresentation().setText(SqlHelper.readString(result, i++));
 					assessment.setTimeLimit(SqlHelper.readLong(result, i++));
