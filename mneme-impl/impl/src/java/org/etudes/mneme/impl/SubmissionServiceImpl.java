@@ -24,6 +24,7 @@
 
 package org.etudes.mneme.impl;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -122,6 +123,9 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 	
 	/** Dependency: EmailService. */
 	protected EmailService emailService = null;
+	
+	// TODO: Really needs to take current user locale into account.
+	protected static DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
 
 	/**
 	 * {@inheritDoc}
@@ -334,10 +338,43 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 		eventTrackingService.post(eventTrackingService.newEvent(MnemeService.SUBMISSION_COMPLETE, getSubmissionReference(submission.getId()), true));
 	}
 
+	// TODO: Refactor to a better more semantically correct name.
 	private void sendEmail(Assessment assessment, Submission submission) 
 	{
-		emailService.send("weblearn@oucs-alexis.oucs.ox.ac.uk", "alexis.oconnor@oucs.ox.ac.uk", 
-				"[TTS]: " + assessment.getTitle(), "\nUser with the id - " + submission.getUserId() + " - submitted!", null, null, null);
+		if (!assessment.getSendEmailOnSubmission()) 
+			return; //proceed no further!
+		
+		// Student Name:							[via] submission.getUserId() -> userDirectoryService.getUser(id)
+		// Mark (% + marks / total):			submission.getTotalScore()
+		// Date:											submission.getSubmittedDate()
+		// Test Name:								assessment.getTitle()								
+		
+		// NOTE: At this stage we do not take into account the notion of a 'pass mark'.
+		
+		User user;
+		try 
+		{
+			user = userDirectoryService.getUser(submission.getUserId());
+		} catch (UserNotDefinedException e) {
+			// TODO: Log it ;-).
+			return;
+		}
+		
+		// Any required simple calculations...
+		float grade = submission.getTotalScore().floatValue();
+		float maxPoints = assessment.getParts().getTotalPoints().floatValue();
+		int percentage = (int)(grade / maxPoints * 100);
+		
+		StringBuilder body = new StringBuilder();
+		body.append("\n").append("Student Name: ").append(user.getDisplayName());
+		body.append("\n").append("Mark: ").append((int)grade).append(" / ").append((int)maxPoints);
+		body.append(" (").append(percentage).append(" %)");
+		body.append("\n").append("Date: ").append(df.format(submission.getSubmittedDate()));
+		body.append("\n").append("Test Name: ").append(assessment.getTitle());
+		
+		emailService.send("weblearn@oucs-alexis.oucs.ox.ac.uk", user.getEmail(), 
+				"Congratulations. You have passed a test!", body.toString(), user.getEmail(), 
+				null, null);
 	}
 	
 	/**
