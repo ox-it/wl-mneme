@@ -126,6 +126,9 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 	
 	// TODO: Really needs to take current user locale into account.
 	protected static DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
+	
+	// TODO: Remove once this is correctly persisted to the DB layer.
+	protected static final float PASS_MARK_PERCENTAGE = 80;
 
 	/**
 	 * {@inheritDoc}
@@ -338,43 +341,42 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 		eventTrackingService.post(eventTrackingService.newEvent(MnemeService.SUBMISSION_COMPLETE, getSubmissionReference(submission.getId()), true));
 	}
 
-	// TODO: Refactor to a better more semantically correct name.
+	// TODO: Refactor to a better more semantically correct name + make protected(!)
 	private void sendEmail(Assessment assessment, Submission submission) 
 	{
 		if (!assessment.getSendEmailOnSubmission()) 
-			return; //proceed no further!
-		
-		// Student Name:							[via] submission.getUserId() -> userDirectoryService.getUser(id)
-		// Mark (% + marks / total):			submission.getTotalScore()
-		// Date:											submission.getSubmittedDate()
-		// Test Name:								assessment.getTitle()								
-		
-		// NOTE: At this stage we do not take into account the notion of a 'pass mark'.
+			return;
 		
 		User user;
 		try 
 		{
 			user = userDirectoryService.getUser(submission.getUserId());
 		} catch (UserNotDefinedException e) {
-			// TODO: Log it ;-).
+			if (M_log.isDebugEnabled()) 
+				M_log.debug("sendEmail: User with the ID " + submission.getUserId() + " not found.");
 			return;
 		}
 		
 		// Any required simple calculations...
 		float grade = submission.getTotalScore().floatValue();
 		float maxPoints = assessment.getParts().getTotalPoints().floatValue();
-		int percentage = (int)(grade / maxPoints * 100);
-		
-		StringBuilder body = new StringBuilder();
-		body.append("\n").append("Student Name: ").append(user.getDisplayName());
-		body.append("\n").append("Mark: ").append((int)grade).append(" / ").append((int)maxPoints);
-		body.append(" (").append(percentage).append(" %)");
-		body.append("\n").append("Date: ").append(df.format(submission.getSubmittedDate()));
-		body.append("\n").append("Test Name: ").append(assessment.getTitle());
-		
-		emailService.send("weblearn@oucs-alexis.oucs.ox.ac.uk", user.getEmail(), 
-				"Congratulations. You have passed a test!", body.toString(), user.getEmail(), 
-				null, null);
+		float percentage = grade / maxPoints * 100;
+
+		if (percentage >= PASS_MARK_PERCENTAGE)
+		{
+			StringBuilder body = new StringBuilder();
+			body.append("\n").append("Congratulations! You have achieved the pass mark ");
+			body.append("(required percentage score: ").append((int)PASS_MARK_PERCENTAGE).append("%)");
+			body.append("\n").append("Your actual score: ").append((int)grade).append(" / ").append((int)maxPoints);
+			body.append(" (").append(percentage).append(" %)\n");
+			body.append("\n").append("Student Name: ").append(user.getDisplayName());
+			body.append("\n").append("Date: ").append(df.format(submission.getSubmittedDate()));
+			body.append("\n").append("Test Name: ").append(assessment.getTitle());
+			
+			emailService.send("weblearn@oucs-alexis.oucs.ox.ac.uk", user.getEmail(), 
+					"Test PASSED! : " + assessment.getTitle(), body.toString(), user.getEmail(), 
+					null, null);
+		}
 	}
 	
 	/**
