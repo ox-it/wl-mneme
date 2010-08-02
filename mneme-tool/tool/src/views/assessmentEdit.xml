@@ -298,20 +298,29 @@
 			</container>
 		</section>
 		
-		<!-- May need to enclose below in a [section[container... -->
-		<selection title="send-email-header">                                                    
-			<selectionChoices>                                         
-				<selectionChoice>                                      
-					<displayMessage>                                   
-						<message selector="send-email" />           
-					</displayMessage>                                  
-					<valueMessage>                                     
-						<message template="true" />                    
-					</valueMessage>                                    
-				</selectionChoice>                                     
-			</selectionChoices>                                        
-			<model ref="assessment.sendEmailOnSubmission" />              
-		</selection>                                                   
+		<section>
+			<container>
+				<selection title="send-email-header">                                                    
+					<selectionChoices>                                         
+						<selectionChoice>                                      
+							<displayMessage>                                   
+								<message selector="send-email" />           
+							</displayMessage>                                  
+							<valueMessage>                                     
+								<message template="true" />                    
+							</valueMessage>                                    
+						</selectionChoice>                                     
+					</selectionChoices>                                        
+					<model ref="assessment.sendEmailOnSubmission" />              
+				</selection>
+				<floatEdit>
+					<title>
+						<message selector="send-email-percentage" />
+					</title>
+					<model ref="assessment.passMark" />
+				</floatEdit>
+			</container>
+		</section>
 
 		<!-- navigations -->
 		<navigationBar>

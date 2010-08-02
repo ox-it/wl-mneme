@@ -629,4 +629,12 @@ public class SubmissionAssessmentImpl implements Assessment
 	public void setSendEmailOnSubmission(Boolean send) {
 		throw new IllegalArgumentException();
 	}
+
+	public Float getPassMark() {
+		return getAssessment().getPassMark();
+	}
+
+	public void setPassMark(Float passMark) {
+		throw new IllegalArgumentException();
+	}
 }

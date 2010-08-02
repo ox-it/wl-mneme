@@ -881,7 +881,7 @@ public abstract class AssessmentStorageSql implements AssessmentStorage
 		sql.append(" A.DATES_ACCEPT_UNTIL, A.DATES_ARCHIVED, A.DATES_DUE, A.DATES_OPEN,");
 		sql.append(" A.GRADING_ANONYMOUS, A.GRADING_AUTO_RELEASE, A.GRADING_GRADEBOOK, A.GRADING_REJECTED,");
 		sql.append(" A.HONOR_PLEDGE, A.ID, A.LIVE, A.LOCKED, A.MINT, A.MODIFIED_BY_DATE, A.MODIFIED_BY_USER,");
-		sql.append(" A.PARTS_CONTINUOUS, A.PARTS_SHOW_PRES, A.PASSWORD, A.PRESENTATION_TEXT,");
+		sql.append(" A.PARTS_CONTINUOUS, A.PARTS_SHOW_PRES, A.PASS_MARK, A.PASSWORD, A.PRESENTATION_TEXT,");
 		sql.append(" A.PUBLISHED, A.QUESTION_GROUPING, A.RANDOM_ACCESS,");
 		sql.append(" A.REVIEW_DATE, A.REVIEW_SHOW_CORRECT, A.REVIEW_SHOW_FEEDBACK, A.REVIEW_TIMING,");
 		sql.append(" A.SEND_SUBMIT_EMAIL, A.SHOW_HINTS, A.SUBMIT_PRES_TEXT, A.TIME_LIMIT, A.TITLE, A.TRIES, A.TYPE");
@@ -918,6 +918,7 @@ public abstract class AssessmentStorageSql implements AssessmentStorage
 					assessment.getModifiedBy().setUserId(SqlHelper.readString(result, i++));
 					assessment.getParts().setContinuousNumbering(SqlHelper.readBoolean(result, i++));
 					assessment.getParts().setShowPresentation(SqlHelper.readBoolean(result, i++));
+					assessment.setPassMark(SqlHelper.readFloat(result, i++));
 					assessment.getPassword().setPassword(SqlHelper.readString(result, i++));
 					assessment.getPresentation().setText(SqlHelper.readString(result, i++));
 					assessment.initPublished(SqlHelper.readBoolean(result, i++));
@@ -1221,13 +1222,13 @@ public abstract class AssessmentStorageSql implements AssessmentStorage
 		sql.append(" DATES_ACCEPT_UNTIL=?, DATES_ARCHIVED=?, DATES_DUE=?, DATES_OPEN=?,");
 		sql.append(" GRADING_ANONYMOUS=?, GRADING_AUTO_RELEASE=?, GRADING_GRADEBOOK=?, GRADING_REJECTED=?,");
 		sql.append(" HONOR_PLEDGE=?, LIVE=?, LOCKED=?, MINT=?, MODIFIED_BY_DATE=?, MODIFIED_BY_USER=?,");
-		sql.append(" PARTS_CONTINUOUS=?, PARTS_SHOW_PRES=?, PASSWORD=?, PRESENTATION_TEXT=?,");
+		sql.append(" PARTS_CONTINUOUS=?, PARTS_SHOW_PRES=?, PASS_MARK=?, PASSWORD=?, PRESENTATION_TEXT=?,");
 		sql.append(" PUBLISHED=?, QUESTION_GROUPING=?, RANDOM_ACCESS=?,");
 		sql.append(" REVIEW_DATE=?, REVIEW_SHOW_CORRECT=?, REVIEW_SHOW_FEEDBACK=?, REVIEW_TIMING=?,");
 		sql.append(" SEND_SUBMIT_EMAIL=?, SHOW_HINTS=?, SUBMIT_PRES_TEXT=?, TIME_LIMIT=?, TITLE=?, TRIES=?, TYPE=?");
 		sql.append(" WHERE ID=?");
 
-		Object[] fields = new Object[35];
+		Object[] fields = new Object[36];
 		int i = 0;
 		fields[i++] = assessment.getArchived() ? "1" : "0";
 		fields[i++] = assessment.getContext();
@@ -1248,6 +1249,7 @@ public abstract class AssessmentStorageSql implements AssessmentStorage
 		fields[i++] = assessment.getParts().getContinuousNumbering() ? "1" : "0";
 		fields[i++] = ((AssessmentPartsImpl) assessment.getParts()).showPresentation == null ? null
 				: (((AssessmentPartsImpl) assessment.getParts()).showPresentation ? "1" : "0");
+		fields[i++] = assessment.getPassMark();
 		fields[i++] = assessment.getPassword().getPassword();
 		fields[i++] = assessment.getPresentation().getText();
 		fields[i++] = assessment.getPublished() ? "1" : "0";

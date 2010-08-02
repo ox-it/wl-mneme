@@ -108,6 +108,8 @@ public class AssessmentImpl implements Assessment
 	protected Attribution modifiedBy = null;
 
 	protected AssessmentPartsImpl parts = null;
+	
+	protected Float passMark = null;
 
 	protected AssessmentPassword password = null;
 
@@ -1029,6 +1031,7 @@ public class AssessmentImpl implements Assessment
 		this.mint = other.mint;
 		this.modifiedBy = new AttributionImpl((AttributionImpl) other.modifiedBy, this.changed);
 		this.parts = new AssessmentPartsImpl(this, (AssessmentPartsImpl) other.parts, this.changed);
+		this.passMark = other.passMark;
 		this.password = new AssessmentPasswordImpl((AssessmentPasswordImpl) other.password, this.changed);
 		this.poolService = other.poolService;
 		this.presentation = new PresentationImpl((PresentationImpl) other.presentation, this.changed);
@@ -1066,6 +1069,21 @@ public class AssessmentImpl implements Assessment
 			return;
 
 		this.sendEmailOnSubmission = send;
+		this.changed.setChanged();
+	}
+
+	public Float getPassMark() {
+		return this.passMark;
+	}
+
+	public void setPassMark(Float passMark) {
+		if (passMark != null && passMark.floatValue() < 0)
+			throw new IllegalArgumentException();
+		
+		if (!Different.different(passMark, this.passMark)) 
+			return;
+
+		this.passMark = passMark;
 		this.changed.setChanged();
 	}
 }
