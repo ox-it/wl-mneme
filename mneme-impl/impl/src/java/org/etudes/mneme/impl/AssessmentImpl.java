@@ -71,8 +71,6 @@ public class AssessmentImpl implements Assessment
 	
 	protected Boolean sendEmailOnSubmission = Boolean.FALSE;
 	
-	protected transient Boolean sendEmailOnSubmissionWas = Boolean.FALSE;
-
 	/** Track the original archived setting. */
 	protected transient Boolean archivedWas = Boolean.FALSE;
 
@@ -1069,22 +1067,5 @@ public class AssessmentImpl implements Assessment
 
 		this.sendEmailOnSubmission = send;
 		this.changed.setChanged();
-	}
-	
-	/**
-	 * Check if the <code>sendEmailOnSubmission</code> property was changed.
-	 * 
-	 * @return TRUE if changed, FALSE if not.
-	 */
-	protected Boolean getSendEmailOnSubmissionChanged()
-	{
-		return Boolean.valueOf(
-				!sendEmailOnSubmission.equals(sendEmailOnSubmissionWas));
-	}
-	
-	protected void initSendEmailOnSubmission(Boolean send)
-	{
-		this.sendEmailOnSubmission = send;
-		this.sendEmailOnSubmissionWas = send;
 	}
 }

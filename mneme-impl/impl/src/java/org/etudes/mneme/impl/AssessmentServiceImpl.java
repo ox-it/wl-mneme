@@ -516,9 +516,6 @@ public class AssessmentServiceImpl implements AssessmentService
 		boolean archivedChanged = ((AssessmentImpl) assessment).getArchivedChanged();
 		((AssessmentImpl) assessment).initArchived(assessment.getArchived());
 
-		// clear the sendEmailOnSubmission value.
-		((AssessmentImpl) assessment).initSendEmailOnSubmission(assessment.getSendEmailOnSubmission());
-		
 		// see if we have changed our gradebook integration (and clear)
 		boolean gbIntegrationChanged = ((AssessmentGradingImpl) (assessment.getGrading())).getGradebookIntegrationChanged();
 		((AssessmentGradingImpl) (assessment.getGrading())).initGradebookIntegration(assessment.getGrading().getGradebookIntegration());
