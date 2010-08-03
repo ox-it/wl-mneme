@@ -127,9 +127,6 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 	// TODO: Really needs to take current user locale into account.
 	protected static DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
 	
-	// TODO: Remove once this is correctly persisted to the DB layer.
-	protected static final float PASS_MARK_PERCENTAGE = 80;
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -361,21 +358,25 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 		float grade = submission.getTotalScore().floatValue();
 		float maxPoints = assessment.getParts().getTotalPoints().floatValue();
 		float percentage = grade / maxPoints * 100;
+		Float requiredPercentage = assessment.getPassMark();
 
-		if (percentage >= PASS_MARK_PERCENTAGE)
+		if (requiredPercentage == null || percentage >= requiredPercentage.floatValue())
 		{
 			StringBuilder body = new StringBuilder();
-			body.append("\n").append("Congratulations! You have achieved the pass mark ");
-			body.append("(required percentage score: ").append((int)PASS_MARK_PERCENTAGE).append("%)");
-			body.append("\n").append("Your actual score: ").append((int)grade).append(" / ").append((int)maxPoints);
+			if (requiredPercentage != null)
+			{
+				body.append("\n").append("Congratulations! You have achieved the pass mark ");
+				body.append("(required percentage score: ").append(requiredPercentage).append("%)");
+			}
+			body.append("\n").append("Your score: ").append(grade).append(" / ").append(maxPoints);
 			body.append(" (").append(percentage).append(" %)\n");
 			body.append("\n").append("Student Name: ").append(user.getDisplayName());
 			body.append("\n").append("Date: ").append(df.format(submission.getSubmittedDate()));
 			body.append("\n").append("Test Name: ").append(assessment.getTitle());
-			
+
 			emailService.send("weblearn@oucs-alexis.oucs.ox.ac.uk", user.getEmail(), 
-					"Test PASSED! : " + assessment.getTitle(), body.toString(), user.getEmail(), 
-					null, null);
+					(requiredPercentage != null  ? "Test PASSED! : " : "Test SUBMITTED! : ") 
+					+ assessment.getTitle(), body.toString(), user.getEmail(), null, null);
 		}
 	}
 	
