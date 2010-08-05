@@ -333,16 +333,27 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 		}
 
 		// (Optionally) send an e-mail, typically if the user reached the pass mark:
-		sendEmail(assessment, submission);
+		checkForAndSendEmailOnSubmission(submission);
 		// event track it
 		eventTrackingService.post(eventTrackingService.newEvent(MnemeService.SUBMISSION_COMPLETE, getSubmissionReference(submission.getId()), true));
 	}
 
-	// TODO: Refactor to a better more semantically correct name + make protected(!)
-	private void sendEmail(Assessment assessment, Submission submission) 
+	/**
+	 * Check the submission to see if an e-mail should be sent in response. This
+	 * method checks to see if the preconditions for sending an e-mail on
+	 * submission are met and if so, sends an e-mail to the user associated with
+	 * the submission.
+	 * @param submission the submission to be checked.
+	 */
+	protected void checkForAndSendEmailOnSubmission(Submission submission) 
 	{
-		if (!assessment.getSendEmailOnSubmission()) 
+		Assessment assessment = submission.getAssessment();
+		
+		if (!assessment.getSendEmailOnSubmission() 
+				|| !assessment.getGrading().getAutoRelease())
+		{
 			return;
+		}
 		
 		User user;
 		try 
@@ -355,28 +366,38 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 		}
 		
 		// Any required simple calculations...
-		float grade = submission.getTotalScore().floatValue();
-		float maxPoints = assessment.getParts().getTotalPoints().floatValue();
-		float percentage = grade / maxPoints * 100;
+		float grade = submission.getTotalScore();
+		float maxPoints = assessment.getParts().getTotalPoints();
+		float percentage = maxPoints > 0 ? grade / maxPoints * 100 : 0;
 		Float requiredPercentage = assessment.getPassMark();
 
-		if (requiredPercentage == null || percentage >= requiredPercentage.floatValue())
+		if (requiredPercentage == null || percentage >= requiredPercentage)
 		{
 			StringBuilder body = new StringBuilder();
+			body.append("<html><body>");
 			if (requiredPercentage != null)
 			{
-				body.append("\n").append("Congratulations! You have achieved the pass mark ");
+				body.append("<br />").append("Congratulations! You have achieved the pass mark ");
 				body.append("(required percentage score: ").append(requiredPercentage).append("%)");
 			}
-			body.append("\n").append("Your score: ").append(grade).append(" / ").append(maxPoints);
-			body.append(" (").append(percentage).append(" %)\n");
-			body.append("\n").append("Student Name: ").append(user.getDisplayName());
-			body.append("\n").append("Date: ").append(df.format(submission.getSubmittedDate()));
-			body.append("\n").append("Test Name: ").append(assessment.getTitle());
+			// Note: i) Surveys do not have points. ii) Can create tests with a max score of 0!
+			if (assessment.getHasPoints() && maxPoints > 0)
+			{
+				body.append("<br />").append("Your score: ").append(grade).append(" / ").append(maxPoints);
+				body.append(" (").append(percentage).append(" %)<br />");
+			}
+			body.append("<br />").append("Student Name: ").append("<strong>").append(user.getDisplayName()).append("</strong>");
+			body.append("<br />").append("Date: ").append("<strong>").append(df.format(submission.getSubmittedDate())).append("</strong>");
+			body.append("<br />").append("Test Name: ").append("<strong>").append(assessment.getTitle()).append("</strong>");
+			body.append("</body></html>");
 
+			List<String> headers = new ArrayList<String>();
+			headers.add("Content-Type: text/html; charset=UTF-8");
+			
 			emailService.send("weblearn@oucs-alexis.oucs.ox.ac.uk", user.getEmail(), 
-					(requiredPercentage != null  ? "Test PASSED! : " : "Test SUBMITTED! : ") 
-					+ assessment.getTitle(), body.toString(), user.getEmail(), null, null);
+					(assessment.getHasPoints() ? "Test" : "Survey") + " Completed! - \'" 
+					+ assessment.getTitle() + "\'.", body.toString(), user.getEmail(), null, 
+					headers);
 		}
 	}
 	
