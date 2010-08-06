@@ -406,6 +406,13 @@ public class AssessmentImpl implements Assessment
 		// grading valid
 		if (!this.grading.getIsValid()) return Boolean.FALSE;
 
+		// Pass mark is a % value so...
+		Float passMark = getPassMark();
+		if (passMark != null)
+		{
+			return passMark >= 0 && passMark <= 100; 
+		}
+
 		return Boolean.TRUE;
 	}
 
