@@ -267,6 +267,18 @@
 				</column>
 				<column>
 					<title>
+						<message selector="ossid-title" />
+					</title>
+					<container>
+						<text>
+							<message>
+								<model ref="submission.userId" delegate="OssIdFormat" tool="sakai.mneme" />
+							</message>
+						</text>
+					</container>
+				</column>
+				<column>
+					<title>
 						<message selector="submission-tries" />
 					</title>
 					<container>

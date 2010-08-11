@@ -34,7 +34,7 @@
 			init-method="init"
 			destroy-method="destroy"
 			singleton="true"
-			depends-on="SubmissionStatus,UserSpecialAccess">
+			depends-on="SubmissionStatus,UserSpecialAccess,OssIdFormat">
 
 		<property name="ui"><ref bean="org.etudes.ambrosia.api.UiService" /></property>
 		<property name="assessmentService"><ref bean="org.etudes.mneme.api.AssessmentService" /></property>
@@ -73,6 +73,18 @@
 
 		<property name="id"><value>UserSpecialAccess</value></property>
 		<property name="toolId"><value>sakai.mneme</value></property>
+	</bean>
+	
+	<bean id="OssIdFormat"
+			class="org.etudes.mneme.tool.OssIdFormatDelegate"
+			init-method="init"
+			destroy-method="destroy"
+			singleton="true">
+
+		<property name="ui"><ref bean="org.etudes.ambrosia.api.UiService" /></property>
+		<property name="id"><value>OssIdFormat</value></property>
+		<property name="toolId"><value>sakai.mneme</value></property>
+		<property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
 	</bean>
 
 </beans>
