@@ -125,7 +125,7 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 	protected EmailService emailService = null;
 	
 	// TODO: Really needs to take current user locale into account.
-	protected static DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
+	protected static DateFormat df = DateFormat.getDateInstance(DateFormat.LONG);
 	
 	/**
 	 * {@inheritDoc}
@@ -374,21 +374,32 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 		if (requiredPercentage == null || percentage >= requiredPercentage)
 		{
 			StringBuilder body = new StringBuilder();
-			body.append("<html><body>");
-			if (requiredPercentage != null)
-			{
-				body.append("<br />").append("Congratulations! You have achieved the pass mark ");
-				body.append("(required percentage score: ").append(requiredPercentage).append("%)");
-			}
+			
+			body.append("<html><body style=\"text-align: center;\">");
+			body.append("<br />");
+			body.append("<hr style=\"width: 50%; color: silver\" />");
+			body.append("<br />");
+			body.append("This is to certify that").append("<br />");
+			body.append("<br />");
+			body.append("<strong>").append(user.getDisplayName()).append("</strong><br />");
+			body.append("<br />");
+			body.append("has undertaken the online course").append("<br />");
+			body.append("<br />");
+			body.append("<em>").append(assessment.getTitle()).append("</em><br />");
+			body.append("<br />");
+			body.append(df.format(submission.getSubmittedDate())).append("<br />");
 			// Note: i) Surveys do not have points. ii) Can create tests with a max score of 0!
 			if (assessment.getHasPoints() && maxPoints > 0)
 			{
-				body.append("<br />").append("Your score: ").append(grade).append(" / ").append(maxPoints);
+				body.append("<br />");
+				body.append("Test Score: ").append(grade).append(" / ").append(maxPoints);
 				body.append(" (").append(percentage).append(" %)<br />");
 			}
-			body.append("<br />").append("Student Name: ").append("<strong>").append(user.getDisplayName()).append("</strong>");
-			body.append("<br />").append("Date: ").append("<strong>").append(df.format(submission.getSubmittedDate())).append("</strong>");
-			body.append("<br />").append("Test Name: ").append("<strong>").append(assessment.getTitle()).append("</strong>");
+			body.append("<br />");
+			body.append("<br />");
+			body.append("<span style=\"font-size: x-small;\">").append("This is a voluntary test and not a formal qualification of any kind.").append("</span><br />");
+			body.append("<br />");
+			body.append("<hr style=\"width: 50%; color: silver\" />");
 			body.append("</body></html>");
 
 			List<String> headers = new ArrayList<String>();
