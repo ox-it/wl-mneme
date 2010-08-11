@@ -25,6 +25,7 @@
 package org.etudes.mneme.impl;
 
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,7 +65,9 @@ import org.sakaiproject.tool.api.SessionManager;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
+import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.util.StringUtil;
+
 
 /**
  * SubmissionServiceImpl implements SubmissionService
@@ -124,8 +128,7 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 	/** Dependency: EmailService. */
 	protected EmailService emailService = null;
 	
-	// TODO: Really needs to take current user locale into account.
-	protected static DateFormat df = DateFormat.getDateInstance(DateFormat.LONG);
+	protected String bundle;
 	
 	/**
 	 * {@inheritDoc}
@@ -370,6 +373,13 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 		float maxPoints = assessment.getParts().getTotalPoints();
 		float percentage = maxPoints > 0 ? grade / maxPoints * 100 : 0;
 		Float requiredPercentage = assessment.getPassMark();
+		
+		// Locale sensitive stuff: messages + date / number formatters:
+		ResourceLoader rl = new ResourceLoader(submission.getUserId(), getBundle());
+		DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, rl.getLocale());
+		NumberFormat nf = NumberFormat.getPercentInstance(rl.getLocale());
+		nf.setMinimumFractionDigits(1);
+		nf.setMaximumFractionDigits(1);
 
 		if (requiredPercentage == null || percentage >= requiredPercentage)
 		{
@@ -379,11 +389,11 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 			body.append("<br />");
 			body.append("<hr style=\"width: 50%; color: silver\" />");
 			body.append("<br />");
-			body.append("This is to certify that").append("<br />");
+			body.append(rl.getString("email-certify")).append("<br />");
 			body.append("<br />");
 			body.append("<strong>").append(user.getDisplayName()).append("</strong><br />");
 			body.append("<br />");
-			body.append("has undertaken the online course").append("<br />");
+			body.append(rl.getString("email-taken-course")).append("<br />");
 			body.append("<br />");
 			body.append("<em>").append(assessment.getTitle()).append("</em><br />");
 			body.append("<br />");
@@ -392,12 +402,13 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 			if (assessment.getHasPoints() && maxPoints > 0)
 			{
 				body.append("<br />");
-				body.append("Test Score: ").append(grade).append(" / ").append(maxPoints);
-				body.append(" (").append(percentage).append(" %)<br />");
+				body.append(rl.getString("email-test-score")).append("&nbsp;").append(grade).append(" / ").append(maxPoints);
+				// Note: Formatter expects a fraction (0.0 - 1.0) and this is just for display not pass calculation!
+				body.append(" (").append(nf.format(percentage / 100)).append(")<br />");
 			}
 			body.append("<br />");
 			body.append("<br />");
-			body.append("<span style=\"font-size: x-small;\">").append("This is a voluntary test and not a formal qualification of any kind.").append("</span><br />");
+			body.append("<span style=\"font-size: x-small;\">").append(rl.getString("email-disclaimer")).append("</span><br />");
 			body.append("<br />");
 			body.append("<hr style=\"width: 50%; color: silver\" />");
 			body.append("</body></html>");
@@ -405,8 +416,9 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 			List<String> headers = new ArrayList<String>();
 			headers.add("Content-Type: text/html; charset=UTF-8");
 			
-			emailService.send("weblearn@oucs-alexis.oucs.ox.ac.uk", user.getEmail(), 
-					(assessment.getHasPoints() ? "Test" : "Survey") + " Completed! - \'" 
+			emailService.send("weblearn@oucs.ox.ac.uk", user.getEmail(), 
+					(assessment.getHasPoints() ? rl.getString("email-test") : rl.getString("email-survey")) 
+					+ " " + rl.getString("email-completed") + " - \'" 
 					+ assessment.getTitle() + "\'.", body.toString(), user.getEmail(), null, 
 					headers);
 		}
@@ -3423,5 +3435,13 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 
 	public void setEmailService(EmailService emailService) {
 		this.emailService = emailService;
+	}
+
+	public String getBundle() {
+		return bundle;
+	}
+
+	public void setBundle(String bundle) {
+		this.bundle = bundle;
 	}
 }
