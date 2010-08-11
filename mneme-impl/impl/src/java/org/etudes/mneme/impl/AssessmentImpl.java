@@ -68,7 +68,9 @@ public class AssessmentImpl implements Assessment
 	private static Log M_log = LogFactory.getLog(AssessmentImpl.class);
 
 	protected Boolean archived = Boolean.FALSE;
-
+	
+	protected Boolean sendEmailOnSubmission = Boolean.FALSE;
+	
 	/** Track the original archived setting. */
 	protected transient Boolean archivedWas = Boolean.FALSE;
 
@@ -106,6 +108,8 @@ public class AssessmentImpl implements Assessment
 	protected Attribution modifiedBy = null;
 
 	protected AssessmentPartsImpl parts = null;
+	
+	protected Float passMark = null;
 
 	protected AssessmentPassword password = null;
 
@@ -401,6 +405,13 @@ public class AssessmentImpl implements Assessment
 
 		// grading valid
 		if (!this.grading.getIsValid()) return Boolean.FALSE;
+
+		// Pass mark is a % value so...
+		Float passMark = getPassMark();
+		if (passMark != null)
+		{
+			return passMark >= 0 && passMark <= 100; 
+		}
 
 		return Boolean.TRUE;
 	}
@@ -1027,6 +1038,7 @@ public class AssessmentImpl implements Assessment
 		this.mint = other.mint;
 		this.modifiedBy = new AttributionImpl((AttributionImpl) other.modifiedBy, this.changed);
 		this.parts = new AssessmentPartsImpl(this, (AssessmentPartsImpl) other.parts, this.changed);
+		this.passMark = other.passMark;
 		this.password = new AssessmentPasswordImpl((AssessmentPasswordImpl) other.password, this.changed);
 		this.poolService = other.poolService;
 		this.presentation = new PresentationImpl((PresentationImpl) other.presentation, this.changed);
@@ -1036,6 +1048,7 @@ public class AssessmentImpl implements Assessment
 		this.questionService = other.questionService;
 		this.randomAccess = other.randomAccess;
 		this.review = new AssessmentReviewImpl(this, (AssessmentReviewImpl) other.review, this.changed);
+		this.sendEmailOnSubmission = other.sendEmailOnSubmission;
 		this.showHints = other.showHints;
 		this.submissionContext = other.submissionContext;
 		this.submissionService = other.submissionService;
@@ -1048,5 +1061,36 @@ public class AssessmentImpl implements Assessment
 		this.tries = other.tries;
 		this.type = other.type;
 		this.userDirectoryService = other.userDirectoryService;
+	}
+
+	public Boolean getSendEmailOnSubmission() {
+		return sendEmailOnSubmission;
+	}
+
+	public void setSendEmailOnSubmission(Boolean send) 
+	{
+		if (send == null) 
+			throw new IllegalArgumentException();
+		
+		if (this.sendEmailOnSubmission.equals(send))
+			return;
+
+		this.sendEmailOnSubmission = send;
+		this.changed.setChanged();
+	}
+
+	public Float getPassMark() {
+		return this.passMark;
+	}
+
+	public void setPassMark(Float passMark) {
+		if (passMark != null && passMark.floatValue() < 0)
+			throw new IllegalArgumentException();
+		
+		if (!Different.different(passMark, this.passMark)) 
+			return;
+
+		this.passMark = passMark;
+		this.changed.setChanged();
 	}
 }

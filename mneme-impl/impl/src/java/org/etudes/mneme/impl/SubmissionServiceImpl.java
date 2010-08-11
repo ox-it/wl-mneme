@@ -24,6 +24,8 @@
 
 package org.etudes.mneme.impl;
 
+import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +34,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,6 +57,7 @@ import org.etudes.mneme.api.SubmissionCompletedException;
 import org.etudes.mneme.api.SubmissionService;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.db.api.SqlService;
+import org.sakaiproject.email.api.EmailService;
 import org.sakaiproject.event.api.EventTrackingService;
 import org.sakaiproject.thread_local.api.ThreadLocalManager;
 import org.sakaiproject.tool.api.Session;
@@ -61,7 +65,9 @@ import org.sakaiproject.tool.api.SessionManager;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
+import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.util.StringUtil;
+
 
 /**
  * SubmissionServiceImpl implements SubmissionService
@@ -118,7 +124,12 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 
 	/** Dependency: UserDirectoryService. */
 	protected UserDirectoryService userDirectoryService = null;
-
+	
+	/** Dependency: EmailService. */
+	protected EmailService emailService = null;
+	
+	protected String bundle;
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -324,10 +335,95 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 			this.gradesService.reportSubmissionGrade(submission);
 		}
 
+		// (Optionally) send an e-mail, typically if the user reached the pass mark:
+		checkForAndSendEmailOnSubmission(submission);
 		// event track it
 		eventTrackingService.post(eventTrackingService.newEvent(MnemeService.SUBMISSION_COMPLETE, getSubmissionReference(submission.getId()), true));
 	}
 
+	/**
+	 * Check the submission to see if an e-mail should be sent in response. This
+	 * method checks to see if the preconditions for sending an e-mail on
+	 * submission are met and if so, sends an e-mail to the user associated with
+	 * the submission.
+	 * @param submission the submission to be checked.
+	 */
+	protected void checkForAndSendEmailOnSubmission(Submission submission) 
+	{
+		Assessment assessment = submission.getAssessment();
+		
+		if (!assessment.getSendEmailOnSubmission() 
+				|| !assessment.getGrading().getAutoRelease())
+		{
+			return;
+		}
+		
+		User user;
+		try 
+		{
+			user = userDirectoryService.getUser(submission.getUserId());
+		} catch (UserNotDefinedException e) {
+			if (M_log.isDebugEnabled()) 
+				M_log.debug("sendEmail: User with the ID " + submission.getUserId() + " not found.");
+			return;
+		}
+		
+		// Any required simple calculations...
+		float grade = submission.getTotalScore();
+		float maxPoints = assessment.getParts().getTotalPoints();
+		float percentage = maxPoints > 0 ? grade / maxPoints * 100 : 0;
+		Float requiredPercentage = assessment.getPassMark();
+		
+		// Locale sensitive stuff: messages + date / number formatters:
+		ResourceLoader rl = new ResourceLoader(submission.getUserId(), getBundle());
+		DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, rl.getLocale());
+		NumberFormat nf = NumberFormat.getPercentInstance(rl.getLocale());
+		nf.setMinimumFractionDigits(1);
+		nf.setMaximumFractionDigits(1);
+
+		if (requiredPercentage == null || percentage >= requiredPercentage)
+		{
+			StringBuilder body = new StringBuilder();
+			
+			body.append("<html><body style=\"text-align: center;\">");
+			body.append("<br />");
+			body.append("<hr style=\"width: 50%; color: silver\" />");
+			body.append("<br />");
+			body.append(rl.getString("email-certify")).append("<br />");
+			body.append("<br />");
+			body.append("<strong>").append(user.getDisplayName()).append("</strong><br />");
+			body.append("<br />");
+			body.append(rl.getString("email-taken-course")).append("<br />");
+			body.append("<br />");
+			body.append("<em>").append(assessment.getTitle()).append("</em><br />");
+			body.append("<br />");
+			body.append(df.format(submission.getSubmittedDate())).append("<br />");
+			// Note: i) Surveys do not have points. ii) Can create tests with a max score of 0!
+			if (assessment.getHasPoints() && maxPoints > 0)
+			{
+				body.append("<br />");
+				body.append(rl.getString("email-test-score")).append("&nbsp;").append(grade).append(" / ").append(maxPoints);
+				// Note: Formatter expects a fraction (0.0 - 1.0) and this is just for display not pass calculation!
+				body.append(" (").append(nf.format(percentage / 100)).append(")<br />");
+			}
+			body.append("<br />");
+			body.append("<br />");
+			body.append("<span style=\"font-size: x-small;\">").append(rl.getString("email-disclaimer")).append("</span><br />");
+			body.append("<br />");
+			body.append("<hr style=\"width: 50%; color: silver\" />");
+			body.append("</body></html>");
+
+			List<String> headers = new ArrayList<String>();
+			headers.add("Content-Type: text/html; charset=UTF-8");
+			
+			emailService.send("weblearn@oucs.ox.ac.uk", user.getEmail(), 
+					(assessment.getHasPoints() ? rl.getString("email-test") : rl.getString("email-survey")) 
+					+ " " + rl.getString("email-completed") + " - \'" 
+					+ assessment.getTitle() + "\'.", body.toString(), user.getEmail(), null, 
+					headers);
+		}
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -3331,5 +3427,21 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 		checkerThread.interrupt();
 
 		checkerThread = null;
+	}
+
+	public EmailService getEmailService() {
+		return emailService;
+	}
+
+	public void setEmailService(EmailService emailService) {
+		this.emailService = emailService;
+	}
+
+	public String getBundle() {
+		return bundle;
+	}
+
+	public void setBundle(String bundle) {
+		this.bundle = bundle;
 	}
 }
