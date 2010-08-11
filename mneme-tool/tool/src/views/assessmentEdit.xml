@@ -300,6 +300,12 @@
 		
 		<section>
 			<container>
+				<floatEdit cols="6">
+					<title>
+						<message selector="pass-mark-title" />
+					</title>
+					<model ref="assessment.passMark" />
+				</floatEdit>
 				<selection title="send-email-header">                                                    
 					<selectionChoices>                                         
 						<selectionChoice>                                      
@@ -313,12 +319,6 @@
 					</selectionChoices>                                        
 					<model ref="assessment.sendEmailOnSubmission" />              
 				</selection>
-				<floatEdit>
-					<title>
-						<message selector="send-email-percentage" />
-					</title>
-					<model ref="assessment.passMark" />
-				</floatEdit>
 			</container>
 		</section>
 
