@@ -33,13 +33,15 @@
 			class="org.etudes.mneme.tool.GradeAssessmentView"
 			init-method="init"
 			destroy-method="destroy"
-			singleton="true">
+			singleton="true"
+			depends-on="SubmissionStatus,UserSpecialAccess,DisplayIdFormat">
 
 		<property name="ui"><ref bean="org.etudes.ambrosia.api.UiService" /></property>
 		<property name="assessmentService"><ref bean="org.etudes.mneme.api.AssessmentService" /></property>
 		<property name="submissionService"><ref bean="org.etudes.mneme.api.SubmissionService" /></property>
 		<property name="toolManager"><ref bean="org.sakaiproject.tool.api.ToolManager" /></property>
 		<property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService" /></property>
+		<property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService" /></property>
 
 		<property name="pageSize"><value>50,100,0</value></property>
 		<property name="toolId"><value>sakai.mneme</value></property>
@@ -61,5 +63,28 @@
 		<property name="id"><value>SubmissionStatus</value></property>
 		<property name="toolId"><value>sakai.mneme</value></property>
 	</bean>
+
+	<bean id="UserSpecialAccess"
+			class="org.etudes.mneme.tool.UserSpecialAccessDecisionDelegate"
+			init-method="init"
+			destroy-method="destroy"
+			singleton="true">
+
+		<property name="ui"><ref bean="org.etudes.ambrosia.api.UiService" /></property>
+		<property name="id"><value>UserSpecialAccess</value></property>
+		<property name="toolId"><value>sakai.mneme</value></property>
+	</bean>
+	
+	<bean id="DisplayIdFormat"
+			class="org.etudes.mneme.tool.DisplayIdFormatDelegate"
+			init-method="init"
+			destroy-method="destroy"
+			singleton="true">
+
+		<property name="ui"><ref bean="org.etudes.ambrosia.api.UiService" /></property>
+		<property name="id"><value>DisplayIdFormat</value></property>
+ 		<property name="toolId"><value>sakai.mneme</value></property>
+		<property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
+ 	</bean>
 
 </beans>
