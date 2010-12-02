@@ -189,7 +189,7 @@
 				</column>
 				<modelColumn>
 					<title>
-						<message selector="submission-username" />
+						<message selector="submission-name" />
 					</title>
 					<included>
 						<decision reversed="TRUE" model="assessment.anonymous" />
@@ -240,7 +240,7 @@
 				</modelColumn>
 				<column>
 					<title>
-						<message selector="submission-username" />
+						<message selector="submission-name" />
 					</title>
 					<included>
 						<decision model="assessment.anonymous" />
@@ -265,6 +265,20 @@
 						<text selector="anonymous" />
 					</container>
 				</column>
+				
+				<column>
+ 					<title>
+-						<message selector="submission-username" />
+-					</title>
+-					<container>
+-						<text>
+-							<message>
+-								<model ref="submission.userId" delegate="DisplayIdFormat" tool="sakai.mneme" />
+-							</message>
+-						</text>
+-					</container>
+-				</column>
+				
 				<column>
 					<title>
 						<message selector="submission-tries" />
@@ -595,6 +609,7 @@
 				<navigation title="save" accessKey="save-access" description="save-description" style="BUTTON" submit="TRUE" destination="SAVE">
 					<icon icon="/icons/save.png" style="LEFT" />
 				</navigation>
+				<divider />
 			</container>
 		</navigationBar>
 
