@@ -49,6 +49,7 @@ import org.etudes.mneme.api.Submission;
 import org.etudes.mneme.api.SubmissionService;
 import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.tool.api.ToolManager;
+import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.util.StringUtil;
 import org.sakaiproject.util.Web;
 
@@ -74,6 +75,9 @@ public class GradeAssessmentView extends ControllerImpl
 
 	/** Dependency: ToolManager */
 	protected ToolManager toolManager = null;
+	
+	/** Dependency: UserDirectory Service */
+	protected UserDirectoryService userDirectoryService = null;
 
 	/**
 	 * Shutdown.
@@ -415,6 +419,15 @@ public class GradeAssessmentView extends ControllerImpl
 	public void setAssessmentService(AssessmentService assessmentService)
 	{
 		this.assessmentService = assessmentService;
+	}
+	
+	/**
+	 * @param userDirectoryService
+	 *        the userDirectoryService to set
+	 */
+	public void setUserDirectoryService(UserDirectoryService userDirectoryService)
+	{
+		this.userDirectoryService = userDirectoryService;
 	}
 
 	/**
