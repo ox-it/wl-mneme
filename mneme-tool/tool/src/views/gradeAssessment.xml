@@ -656,6 +656,11 @@
 					<icon icon="/icons/save.png" style="LEFT" />
 				</navigation>
 				<divider />
+				
+				<navigation title="export-csv" accessKey="export-access" description="export-description" style="BUTTON" submit="TRUE" destination="EXPORT">
+					<icon icon="/icons/import_export.png" style="LEFT" />
+				</navigation>
+				 
 			</container>
 		</navigationBar>
 
