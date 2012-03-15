@@ -35,6 +35,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.util.Xml;
 import org.w3c.dom.Document;
+import org.apache.xml.resolver.tools.CatalogResolver;
 
 /**
  * Upload handles file uploads of XML documents, parsing the text into a DOM.
@@ -285,4 +286,15 @@ public class UploadXml
 			}
 		}
 	}
+	
+	/**
+	 * @return a DocumentBuilder object for XML parsing.
+	 */
+	protected static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException
+	{
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
+		return dbf.newDocumentBuilder();
+	}
+
 }

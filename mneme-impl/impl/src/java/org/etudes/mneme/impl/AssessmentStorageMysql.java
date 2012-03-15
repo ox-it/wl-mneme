@@ -156,13 +156,12 @@ public class AssessmentStorageMysql extends AssessmentStorageSql implements Asse
 		sql.append(" DATES_ACCEPT_UNTIL, DATES_ARCHIVED, DATES_DUE, DATES_OPEN,");
 		sql.append(" GRADING_ANONYMOUS, GRADING_AUTO_RELEASE, GRADING_GRADEBOOK, GRADING_REJECTED, FORMAL_EVAL, RESULTS_EMAIL,");
 		sql.append(" RESULTS_SENT, HONOR_PLEDGE, LIVE, LOCKED, MINT, MODIFIED_BY_DATE, MODIFIED_BY_USER,");
-		sql.append(" PARTS_CONTINUOUS, PARTS_SHOW_PRES, PASSWORD, PRESENTATION_TEXT,");
+		sql.append(" PARTS_CONTINUOUS, PARTS_SHOW_PRES, PASS_MARK, PASSWORD, PRESENTATION_TEXT,");
 		sql.append(" PUBLISHED, FROZEN, QUESTION_GROUPING, RANDOM_ACCESS,");
 		sql.append(" REVIEW_DATE, REVIEW_SHOW_CORRECT, REVIEW_SHOW_FEEDBACK, REVIEW_SHOW_SUMMARY, REVIEW_TIMING, MIN_SCORE_SET, MIN_SCORE, ");
-		sql.append(" SHOW_HINTS, SHOW_MODEL_ANSWER, SUBMIT_PRES_TEXT, TIME_LIMIT, TITLE, TRIES, TYPE, POOL, NEEDSPOINTS, SHUFFLE_CHOICES)");
-		sql.append(" VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-
-		Object[] fields = new Object[46];
+		sql.append(" SEND_SUBMIT_EMAIL, SHOW_HINTS, SHOW_MODEL_ANSWER, SUBMIT_PRES_TEXT, TIME_LIMIT, TITLE, TRIES, TYPE, POOL, NEEDSPOINTS, SHUFFLE_CHOICES)");
+		sql.append(" VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		Object[] fields = new Object[48];
 		int i = 0;
 		fields[i++] = assessment.getArchived() ? "1" : "0";
 		fields[i++] = assessment.getContext();
@@ -188,6 +187,7 @@ public class AssessmentStorageMysql extends AssessmentStorageSql implements Asse
 		fields[i++] = assessment.getParts().getContinuousNumbering() ? "1" : "0";
 		fields[i++] = ((AssessmentPartsImpl) assessment.getParts()).showPresentation == null ? null
 				: (((AssessmentPartsImpl) assessment.getParts()).showPresentation ? "1" : "0");
+		fields[i++] = assessment.getPassMark();
 		fields[i++] = assessment.getPassword().getPassword();
 		fields[i++] = assessment.getPresentation().getText();
 		fields[i++] = assessment.getPublished() ? "1" : "0";
@@ -202,7 +202,7 @@ public class AssessmentStorageMysql extends AssessmentStorageSql implements Asse
 		fields[i++] = assessment.getReview().getTiming().toString();
 		fields[i++] = (assessment.getMinScoreSet() && assessment.getMinScore() != null) ? "1" : "0";
 		fields[i++] = assessment.getMinScore();
-		
+		fields[i++] = assessment.getSendEmailOnSubmission() ? "1" : "0";
 		fields[i++] = assessment.getShowHints() ? "1" : "0";
 		fields[i++] = assessment.getShowModelAnswer() ? "1" : "0";
 		fields[i++] = assessment.getSubmitPresentation().getText();
