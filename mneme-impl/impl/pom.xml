@@ -33,7 +33,7 @@
 		<artifactId>mneme</artifactId>
 		<groupId>org.etudes.mneme</groupId>
 		<version>1.2</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<name>etudes-mneme-impl</name>
