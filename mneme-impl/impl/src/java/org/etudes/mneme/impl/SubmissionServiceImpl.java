@@ -55,6 +55,7 @@ import org.etudes.mneme.api.SecurityService;
 import org.etudes.mneme.api.Submission;
 import org.etudes.mneme.api.SubmissionCompletedException;
 import org.etudes.mneme.api.SubmissionService;
+import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.db.api.SqlService;
 import org.sakaiproject.email.api.EmailService;
@@ -94,6 +95,9 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 
 	/** Dependency: SecurityService */
 	protected SecurityService securityService = null;
+
+	/** Dependency: ServerConfigurationService */
+	protected ServerConfigurationService serverConfigurationService;
 
 	/** Dependency: SessionManager */
 	protected SessionManager sessionManager = null;
@@ -416,7 +420,7 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 			List<String> headers = new ArrayList<String>();
 			headers.add("Content-Type: text/html; charset=UTF-8");
 			
-			emailService.send("weblearn@oucs.ox.ac.uk", user.getEmail(), 
+			emailService.send(serverConfigurationService.getString("mail.support"), user.getEmail(),
 					(assessment.getHasPoints() ? rl.getString("email-test") : rl.getString("email-survey")) 
 					+ " " + rl.getString("email-completed") + " - \'" 
 					+ assessment.getTitle() + "\'.", body.toString(), user.getEmail(), null, 
@@ -3443,5 +3447,9 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 
 	public void setBundle(String bundle) {
 		this.bundle = bundle;
+	}
+
+	public void setServerConfigurationService(ServerConfigurationService serverConfigurationService) {
+		this.serverConfigurationService = serverConfigurationService;
 	}
 }
