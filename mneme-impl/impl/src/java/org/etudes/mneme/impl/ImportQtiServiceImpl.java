@@ -1635,8 +1635,9 @@ public class ImportQtiServiceImpl implements ImportQtiService
 			{
 				String value = answerMap.get(key);
 
-				clean = HtmlHelper.clean(value);
-				choices.add(clean);
+				// clean = HtmlHelper.clean(value);
+				// choices.add(clean);
+				choices.add(value.trim());
 			}
 			mc.setAnswerChoices(choices);
 
@@ -1656,7 +1657,7 @@ public class ImportQtiServiceImpl implements ImportQtiService
 					for (int index = 0; index < choicesAuthored.size(); index++)
 					{
 						MultipleChoiceQuestionImpl.MultipleChoiceQuestionChoice choice = choicesAuthored.get(index);
-						if (choice.getText().equals(correctValue))
+						if (choice.getText().equals(correctValue.trim()))
 						{
 							// use this answer's id
 							correctAnswers.add(Integer.valueOf(choice.getId()));
@@ -2442,8 +2443,9 @@ public class ImportQtiServiceImpl implements ImportQtiService
 			{
 				String value = answerMap.get(key);
 
-				clean = HtmlHelper.clean(value);
-				choices.add(clean);
+				// clean = HtmlHelper.clean(value);
+				// choices.add(clean);
+				choices.add(value.trim());
 			}
 			mc.setAnswerChoices(choices);
 
@@ -2463,7 +2465,7 @@ public class ImportQtiServiceImpl implements ImportQtiService
 					for (int index = 0; index < choicesAuthored.size(); index++)
 					{
 						MultipleChoiceQuestionImpl.MultipleChoiceQuestionChoice choice = choicesAuthored.get(index);
-						if (choice.getText().equals(correctValue))
+						if (choice.getText().equals(correctValue.trim()))
 						{
 							// use this answer's id
 							correctAnswers.add(Integer.valueOf(choice.getId()));
