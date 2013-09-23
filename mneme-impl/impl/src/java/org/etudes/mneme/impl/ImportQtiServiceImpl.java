@@ -643,9 +643,8 @@ public class ImportQtiServiceImpl implements ImportQtiService
 			{
 				String value = answerMap.get(key);
 
-				// clean = HtmlHelper.clean(value);
-				// choices.add(clean);
-				choices.add(value.trim());
+				clean = HtmlHelper.clean(value);
+				choices.add(clean);
 			}
 			mc.setAnswerChoices(choices);
 
@@ -663,15 +662,18 @@ public class ImportQtiServiceImpl implements ImportQtiService
 				if (correctId != null)
 				{
 					String correctValue = answerMap.get(correctId);
+					if (correctValue != null) {
 
-					// find this answer
-					for (int index = 0; index < choicesAuthored.size(); index++)
-					{
-						MultipleChoiceQuestionImpl.MultipleChoiceQuestionChoice choice = choicesAuthored.get(index);
-						if (choice.getText().equals(correctValue.trim()))
+						String cleanedAnswer = StringUtil.trimToNull(HtmlHelper.clean(correctValue));
+						// find this answer
+						for (int index = 0; index < choicesAuthored.size(); index++)
 						{
-							// use this answer's id
-							correctAnswers.add(Integer.valueOf(choice.getId()));
+							MultipleChoiceQuestionImpl.MultipleChoiceQuestionChoice choice = choicesAuthored.get(index);
+							if (choice.getText().equals(cleanedAnswer))
+							{
+								// use this answer's id
+								correctAnswers.add(Integer.valueOf(choice.getId()));
+							}
 						}
 					}
 				}
@@ -1635,9 +1637,8 @@ public class ImportQtiServiceImpl implements ImportQtiService
 			{
 				String value = answerMap.get(key);
 
-				// clean = HtmlHelper.clean(value);
-				// choices.add(clean);
-				choices.add(value.trim());
+				clean = HtmlHelper.clean(value);
+				choices.add(clean);
 			}
 			mc.setAnswerChoices(choices);
 
@@ -1653,14 +1654,18 @@ public class ImportQtiServiceImpl implements ImportQtiService
 				{
 					String correctValue = answerMap.get(correctKey);
 
-					// find this answer
-					for (int index = 0; index < choicesAuthored.size(); index++)
-					{
-						MultipleChoiceQuestionImpl.MultipleChoiceQuestionChoice choice = choicesAuthored.get(index);
-						if (choice.getText().equals(correctValue.trim()))
+					if (correctValue != null) {
+
+						String cleanedAnswer = StringUtil.trimToNull(HtmlHelper.clean(correctValue));
+						// find this answer
+						for (int index = 0; index < choicesAuthored.size(); index++)
 						{
-							// use this answer's id
-							correctAnswers.add(Integer.valueOf(choice.getId()));
+							MultipleChoiceQuestionImpl.MultipleChoiceQuestionChoice choice = choicesAuthored.get(index);
+							if (choice.getText().equals(cleanedAnswer))
+							{
+								// use this answer's id
+								correctAnswers.add(Integer.valueOf(choice.getId()));
+							}
 						}
 					}
 				}
@@ -2443,9 +2448,8 @@ public class ImportQtiServiceImpl implements ImportQtiService
 			{
 				String value = answerMap.get(key);
 
-				// clean = HtmlHelper.clean(value);
-				// choices.add(clean);
-				choices.add(value.trim());
+				clean = HtmlHelper.clean(value);
+				choices.add(clean);
 			}
 			mc.setAnswerChoices(choices);
 
@@ -2460,15 +2464,18 @@ public class ImportQtiServiceImpl implements ImportQtiService
 				if (correctKey != null)
 				{
 					String correctValue = answerMap.get(correctKey);
+					if (correctValue != null) {
 
-					// find this answer
-					for (int index = 0; index < choicesAuthored.size(); index++)
-					{
-						MultipleChoiceQuestionImpl.MultipleChoiceQuestionChoice choice = choicesAuthored.get(index);
-						if (choice.getText().equals(correctValue.trim()))
+						String cleanedAnswer = StringUtil.trimToNull(HtmlHelper.clean(correctValue));
+						// find this answer
+						for (int index = 0; index < choicesAuthored.size(); index++)
 						{
-							// use this answer's id
-							correctAnswers.add(Integer.valueOf(choice.getId()));
+							MultipleChoiceQuestionImpl.MultipleChoiceQuestionChoice choice = choicesAuthored.get(index);
+							if (choice.getText().equals(cleanedAnswer))
+							{
+								// use this answer's id
+								correctAnswers.add(Integer.valueOf(choice.getId()));
+							}
 						}
 					}
 				}
