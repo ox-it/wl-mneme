@@ -61,5 +61,17 @@
 		<property name="id"><value>SubmissionStatus</value></property>
 		<property name="toolId"><value>sakai.mneme</value></property>
 	</bean>
+	
+	<bean id="DisplayIdFormat"
+			class="org.etudes.mneme.tool.DisplayIdFormatDelegate"
+			init-method="init"
+			destroy-method="destroy"
+			singleton="true">
+
+		<property name="ui"><ref bean="org.etudes.ambrosia.api.UiService" /></property>
+		<property name="id"><value>DisplayIdFormat</value></property>
+ 		<property name="toolId"><value>sakai.mneme</value></property>
+		<property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
+ 	</bean>
 
 </beans>
