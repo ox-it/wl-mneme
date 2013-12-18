@@ -219,7 +219,6 @@ public class GradeSubmissionView extends ControllerImpl
 
 		// needed by some of the delegates to show the score
 		context.put("grading", Boolean.TRUE);
-		new CKSetup().setCKCollectionAttrib(getDocsPath(), toolManager.getCurrentPlacement().getContext());
 
 		uiService.render(ui, context);
 	}

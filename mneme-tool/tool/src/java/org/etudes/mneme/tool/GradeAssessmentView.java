@@ -216,7 +216,6 @@ public class GradeAssessmentView extends ControllerImpl
 		{
 			context.put("pageSizes", this.pageSizes);
 		}
-		new CKSetup().setCKCollectionAttrib(getDocsPath(), toolManager.getCurrentPlacement().getContext());
 
 		uiService.render(ui, context);
 	}
