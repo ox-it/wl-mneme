@@ -2707,17 +2707,14 @@ public class SubmissionServiceImpl implements SubmissionService, Runnable
 			}
 		}
 
-		// filter out any submissions found that are not for one of the users in the userIds list (they may have lost permission)
-		if (filterByPermission)
+		// Disregard submissions from any users who no longer can submit.		
+		for (Iterator<SubmissionImpl> i = rv.iterator(); i.hasNext();)
 		{
-			for (Iterator<SubmissionImpl> i = rv.iterator(); i.hasNext();)
-			{
-				SubmissionImpl submission = i.next();
-
-				if (!userIds.contains(submission.getUserId()))
-				{
-					i.remove();
-				}
+			// TODO: Optimise / re-think if this is a performance hit for lots of users!!
+			Submission s = i.next();
+			if (!securityService.checkSecurity(s.getUserId(), MnemeService.SUBMIT_PERMISSION, 
+					s.getAssessment().getContext())) {
+				i.remove();
 			}
 		}
 

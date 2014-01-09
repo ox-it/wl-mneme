@@ -414,9 +414,6 @@ public class GradeAssessmentView extends ControllerImpl
 				destination = StringUtil.unsplit(dest, "/");
 			}
 		}
-
-		res.sendRedirect(res.encodeRedirectURL(Web.returnUrl(req, destination)));
-		
 		if (destination.equals("EXPORT")) 
 		{
 			String fileName = assessment.getTitle().replaceAll(" ", "_")+".csv";
@@ -461,7 +458,6 @@ public class GradeAssessmentView extends ControllerImpl
 			destination = context.getDestination();
 			
 		} else {
-			
 			res.sendRedirect(res.encodeRedirectURL(Web.returnUrl(req, destination)));
 		}
 	}
