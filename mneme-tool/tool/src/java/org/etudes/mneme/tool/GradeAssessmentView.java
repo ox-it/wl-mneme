@@ -418,7 +418,7 @@ public class GradeAssessmentView extends ControllerImpl
 		{
 			String fileName = assessment.getTitle().replaceAll(" ", "_")+".csv";
 			StringBuffer sb = new StringBuffer();
-			sb.append("\"Name\",\"OSS id\",\"Tries\",\"Finished\",\"Auto Score\",\"Final\",\"Evaluated\",\"Released\"\n");
+			sb.append("\"Name\",\"User Name\",\"Tries\",\"Finished\",\"Auto Score\",\"Final\",\"Evaluated\",\"Released\"\n");
 			
 			Iterator iter = submissions.getSet().iterator();
 			while (iter.hasNext()) {
