@@ -617,9 +617,12 @@ public class GradeAssessmentView extends ControllerImpl
 		
 		sb.append("\""+submission.getSiblingCount()+"/");
 		if (null != submission.getAssessment()) {
-			sb.append(submission.getAssessment().getTries()+"\"");
-		} else {
-			sb.append("infinite\"");
+			Integer tries = submission.getAssessment().getTries();
+			if (tries != null) {
+				sb.append(tries +"\"");
+			} else {
+				sb.append("unlimited\"");
+			}
 		}
 		sb.append(",");
 		
