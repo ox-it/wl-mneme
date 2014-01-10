@@ -416,7 +416,10 @@ public class GradeAssessmentView extends ControllerImpl
 		{
 			String fileName = assessment.getTitle().replaceAll(" ", "_")+".csv";
 			StringBuffer sb = new StringBuffer();
-			sb.append("\"Name\",\"User Name\",\"Tries\",\"Finished\",\"Auto Score\",\"Final\",\"Evaluated\",\"Released\"\n");
+
+			boolean showTries = "true".equals(highest.getValue());
+
+			sb.append(this.csvTitles(showTries));
 
 			ArrayList<String> csvLines = new ArrayList<String>();
 			Iterator iter = submissions.getSet().iterator();
@@ -424,7 +427,7 @@ public class GradeAssessmentView extends ControllerImpl
 				Object object = iter.next();
 				if (object instanceof Submission) {
 					Submission submission = (Submission)object;
-					csvLines.add(toCSV(submission));
+					csvLines.add(toCSV(submission, showTries));
 				}
 			}
 
@@ -617,7 +620,15 @@ public class GradeAssessmentView extends ControllerImpl
 		}
 	}
 
-	private String toCSV(Submission submission) {
+	private String csvTitles(boolean showTries) {
+		String titles = "";
+		titles += "\"Name\",\"User Name\",";
+		titles += showTries ? "\"Tries\"," : "";
+		titles += "\"Finished\",\"Auto Score\",\"Final\",\"Evaluated\",\"Released\"\n";
+		return titles;
+	}
+
+	private String toCSV(Submission submission, boolean showTries) {
 		StringBuffer sb = new StringBuffer();
 		
 		try {
@@ -632,16 +643,18 @@ public class GradeAssessmentView extends ControllerImpl
 			
 		sb.append(",");
 		
-		sb.append("\""+submission.getSiblingCount()+"/");
-		if (null != submission.getAssessment()) {
-			Integer tries = submission.getAssessment().getTries();
-			if (tries != null) {
-				sb.append(tries +"\"");
-			} else {
-				sb.append("unlimited\"");
+		if (showTries) {
+			sb.append("\""+submission.getSiblingCount()+"/");
+			if (null != submission.getAssessment()) {
+				Integer tries = submission.getAssessment().getTries();
+				if (tries != null) {
+					sb.append(tries +"\"");
+				} else {
+					sb.append("unlimited\"");
+				}
 			}
+			sb.append(",");
 		}
-		sb.append(",");
 		
 		if (null != submission.getSubmittedDate()) {
 			sb.append("\""+sdf.format(submission.getSubmittedDate())+"\"");
