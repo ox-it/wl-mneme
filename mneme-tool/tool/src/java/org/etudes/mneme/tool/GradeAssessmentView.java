@@ -27,9 +27,7 @@ package org.etudes.mneme.tool;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -419,21 +417,25 @@ public class GradeAssessmentView extends ControllerImpl
 			String fileName = assessment.getTitle().replaceAll(" ", "_")+".csv";
 			StringBuffer sb = new StringBuffer();
 			sb.append("\"Name\",\"User Name\",\"Tries\",\"Finished\",\"Auto Score\",\"Final\",\"Evaluated\",\"Released\"\n");
-			
+
+			ArrayList<String> csvLines = new ArrayList<String>();
 			Iterator iter = submissions.getSet().iterator();
 			while (iter.hasNext()) {
 				Object object = iter.next();
 				if (object instanceof Submission) {
 					Submission submission = (Submission)object;
-					sb.append(toCSV(submission));
-					sb.append("\n");
+					csvLines.add(toCSV(submission));
 				}
 			}
+
+			this.sortLines(csvLines);
+			this.joinLines(sb, csvLines);
+
 			String csvString = sb.toString();
 			
 			res.setContentType("text/comma-separated-values");
 			String disposition = "attachment; fileName="+fileName;
-            res.setHeader("Content-Disposition", disposition);
+			res.setHeader("Content-Disposition", disposition);
 			res.setHeader("Cache-Control", "max-age=0");
 			res.setContentLength(csvString.length());
 			OutputStream out = null;
@@ -599,14 +601,25 @@ public class GradeAssessmentView extends ControllerImpl
 
 		return sort;
 	}
-	
+
+	private void sortLines(ArrayList<String> lines) {
+		java.util.Collections.sort(lines);
+	}
+
+	private void joinLines(StringBuffer sb, ArrayList<String> lines) {
+		for (String line : lines) {
+			sb.append(line);
+			sb.append("\n");
+		}
+	}
+
 	private String toCSV(Submission submission) {
 		StringBuffer sb = new StringBuffer();
 		
 		try {
 			User user;
 			user = userDirectoryService.getUser(submission.getUserId());
-			sb.append("\""+user.getLastName()+", "+user.getFirstName()+"\"");
+			sb.append("\""+user.getSortName()+"\"");
 			sb.append(",");
 			sb.append("\""+user.getDisplayId()+"\"");
 		} catch (UserNotDefinedException e) {
