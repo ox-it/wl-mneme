@@ -603,7 +603,11 @@ public class GradeAssessmentView extends ControllerImpl
 	}
 
 	private void sortLines(ArrayList<String> lines) {
-		java.util.Collections.sort(lines);
+		java.util.Collections.sort(lines, new Comparator<String>() {
+			public int compare(String s, String s2) {
+				return s.compareToIgnoreCase(s2);
+			}
+		});
 	}
 
 	private void joinLines(StringBuffer sb, ArrayList<String> lines) {
