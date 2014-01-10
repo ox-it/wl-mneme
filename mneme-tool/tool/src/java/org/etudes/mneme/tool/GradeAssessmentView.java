@@ -427,7 +427,7 @@ public class GradeAssessmentView extends ControllerImpl
 				Object object = iter.next();
 				if (object instanceof Submission) {
 					Submission submission = (Submission)object;
-					csvLines.add(toCSV(submission));
+					csvLines.add(toCSV(submission, showTries));
 				}
 			}
 
@@ -624,7 +624,7 @@ public class GradeAssessmentView extends ControllerImpl
 		return titles;
 	}
 
-	private String toCSV(Submission submission) {
+	private String toCSV(Submission submission, boolean showTries) {
 		StringBuffer sb = new StringBuffer();
 		
 		try {
@@ -639,16 +639,18 @@ public class GradeAssessmentView extends ControllerImpl
 			
 		sb.append(",");
 		
-		sb.append("\""+submission.getSiblingCount()+"/");
-		if (null != submission.getAssessment()) {
-			Integer tries = submission.getAssessment().getTries();
-			if (tries != null) {
-				sb.append(tries +"\"");
-			} else {
-				sb.append("unlimited\"");
+		if (showTries) {
+			sb.append("\""+submission.getSiblingCount()+"/");
+			if (null != submission.getAssessment()) {
+				Integer tries = submission.getAssessment().getTries();
+				if (tries != null) {
+					sb.append(tries +"\"");
+				} else {
+					sb.append("unlimited\"");
+				}
 			}
+			sb.append(",");
 		}
-		sb.append(",");
 		
 		if (null != submission.getSubmittedDate()) {
 			sb.append("\""+sdf.format(submission.getSubmittedDate())+"\"");
