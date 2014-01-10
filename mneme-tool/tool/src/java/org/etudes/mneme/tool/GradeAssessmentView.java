@@ -416,7 +416,10 @@ public class GradeAssessmentView extends ControllerImpl
 		{
 			String fileName = assessment.getTitle().replaceAll(" ", "_")+".csv";
 			StringBuffer sb = new StringBuffer();
-			sb.append("\"Name\",\"User Name\",\"Tries\",\"Finished\",\"Auto Score\",\"Final\",\"Evaluated\",\"Released\"\n");
+
+			boolean showTries = "true".equals(highest.getValue());
+
+			sb.append(this.csvTitles(showTries));
 
 			ArrayList<String> csvLines = new ArrayList<String>();
 			Iterator iter = submissions.getSet().iterator();
@@ -611,6 +614,14 @@ public class GradeAssessmentView extends ControllerImpl
 			sb.append(line);
 			sb.append("\n");
 		}
+	}
+
+	private String csvTitles(boolean showTries) {
+		String titles = "";
+		titles += "\"Name\",\"User Name\",";
+		titles += showTries ? "\"Tries\"," : "";
+		titles += "\"Finished\",\"Auto Score\",\"Final\",\"Evaluated\",\"Released\"\n";
+		return titles;
 	}
 
 	private String toCSV(Submission submission) {
