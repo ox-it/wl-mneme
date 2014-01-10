@@ -417,7 +417,9 @@ public class GradeAssessmentView extends ControllerImpl
 			String fileName = assessment.getTitle().replaceAll(" ", "_")+".csv";
 			StringBuffer sb = new StringBuffer();
 
-			boolean showTries = "true".equals(highest.getValue());
+			// Temporarily hardcode this parameter so tries are not displayed
+			// there is currently no reliable method to get the number of tries
+			boolean showTries = false;
 
 			sb.append(this.csvTitles(showTries));
 
