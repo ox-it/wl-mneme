@@ -37,6 +37,10 @@ import org.sakaiproject.util.Xml;
 import org.w3c.dom.Document;
 import org.apache.xml.resolver.tools.CatalogResolver;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 /**
  * Upload handles file uploads of XML documents, parsing the text into a DOM.
  */
