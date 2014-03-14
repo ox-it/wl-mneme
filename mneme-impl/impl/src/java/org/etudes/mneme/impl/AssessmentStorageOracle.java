@@ -229,7 +229,7 @@ public class AssessmentStorageOracle extends AssessmentStorageSql implements Ass
 		sql.append(" SHOW_HINTS, SHOW_MODEL_ANSWER, SUBMIT_PRES_TEXT, TIME_LIMIT, TITLE, TRIES, TYPE, POOL, NEEDSPOINTS, SHUFFLE_CHOICES)");
 		sql.append(" VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
-		Object[] fields = new Object[47];
+		Object[] fields = new Object[48];
 		int i = 0;
 		fields[i++] = id;
 		fields[i++] = assessment.getArchived() ? "1" : "0";
