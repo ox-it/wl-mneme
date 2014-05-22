@@ -46,7 +46,6 @@
 		<module>mneme-impl/pack</module>
 		<module>mneme-tool/tool</module>
 		<module>mneme-test/test-tool</module>
-		<module>mneme-help</module>
 	</modules>
 
 </project>
