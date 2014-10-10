@@ -43,7 +43,7 @@
  		<property name="bundle"><value>instructionsEdit</value></property>
 		<property name="shared"><value>mneme</value></property>
 		<property name="components"><value>instructionsEdit.xml</value></property>
- 		<property name="docsPath"><value>/private/mneme/{CONTEXT}/docs/</value></property>
+ 		<property name="docsPath"><value>/group/{CONTEXT}/</value></property>
 	</bean>
 
 </beans>
